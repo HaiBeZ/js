@@ -25,4 +25,4 @@ const rewritetConsole=()=> {
  }
  
  rewritetConsole();
- console.log("HAHAHA")
+ console.log("HAHAHA1111")
