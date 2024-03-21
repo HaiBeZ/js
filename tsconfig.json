@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "types": [
+            "bun-types"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}
