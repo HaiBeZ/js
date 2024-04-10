@@ -1,5 +1,14 @@
 {
-  "dependencies": { "fs-extra": "^11.2.0" },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "chokidar": "^3.6.0",
+    "compression": "^1.7.4",
+    "connect": "^3.7.0",
+    "cookie-session": "^2.1.0",
+    "fs-extra": "^11.2.0",
+    "import-html-entry": "^1.15.2",
+    "scheduler": "^0.23.0"
+  },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/rollup": "^0.54.0",

@@ -6,6 +6,7 @@ export const createContentHash=(content:string):string=>{
     const hash=createHash('md5');
     hash.update(content);
     return hash.digest('hex');
+    
 }
 
 console.log(createContentHash('d'));

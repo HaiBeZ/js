@@ -17,19 +17,4 @@ console.log(JSON.stringify(PickFunc(obj, ["a", "c"])) === `{"a":"A","c":{"d":"D"
 
 
 
-// var name='outer';
-// function k(){
-//     let name = 'k';
-//     let obj={
-//         print:function(){
-//             console.log(name);
-//             console.log(this.name);
-//         }
-//     }
-//     return obj;
-// }
 
-// const o = k();
-// o.print();
-// let p=o.print;
-// p();
