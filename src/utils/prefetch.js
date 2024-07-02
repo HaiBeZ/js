@@ -10,16 +10,20 @@ const data=[
 ]
 
 const prefetch=({type,src})=>{
-    if(type==='image'){
-        const image=new Image();
-        image.crossOrigin='include';
-        image.src=src;
 
-    }else if(type==='js'){
-        const script = document.createElement('script');
-        script.src = src;
-        document.head.appendChild(script);
+    const fun=()=>{
+        if(type==='image'){
+            const image=new Image();
+            image.crossOrigin='include';
+            image.src=src;
+    
+        }else if(type==='js'){
+            const script = document.createElement('script');
+            script.src = src;
+            document.head.appendChild(script);
+        }
     }
+    requestIdleCallback(fun);
 }
 
 const prefetchAll=(arr=[])=>{
@@ -29,3 +33,21 @@ const prefetchAll=(arr=[])=>{
 }
 
 prefetchAll(data);
+
+
+
+function addLink(href, rel = 'prefetch', addCrossOrigin) {
+    const head = document.querySelector('head')
+    if (!head) {
+        return
+    }
+    const el = document.createElement('link')
+    if (rel) {
+      el.rel = rel
+    }
+    el.href = href
+    if (addCrossOrigin) {
+        el.setAttribute('crossorigin', '')
+    }
+    head.appendChild(el)
+}

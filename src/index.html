@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+    <link href="./styles/index.css">
+  </head>
+  <body>
     <h1>123123123</h1>
-</body>
+    <div id="container">
+      <div class="node" id="node1">Node 1</div>
+      <div class="node" id="node2">Node 2</div>
+    </div>
+    <button>交换</button>
+    <script>
+      function swapNodes(node1, node2) {
+        // 确保两个节点都存在于DOM中
+        if (!node1.parentNode || !node2.parentNode) {
+          console.error("One or both of the nodes are not in the document.");
+          return;
+        }
+
+        // 保存父节点和上一个兄弟节点
+        const parent1 = node1.parentNode;
+        const prev1 = node1.previousSibling;
+
+        const parent2 = node2.parentNode;
+        const prev2 = node2.previousSibling;
+
+        // 将node1插入到node2的位置
+        if (prev2) {
+          parent2.insertBefore(node1, node2);
+        } else {
+          parent2.appendChild(node1);
+        }
+
+        // 将node2插入到node1原来的位置
+        if (prev1) {
+          parent1.insertBefore(node2, prev1.nextSibling);
+        } else {
+          parent1.appendChild(node2);
+        }
+      }
+      const button = document.querySelector("button");
+
+      button.addEventListener("click", (event) => {
+        console.log("1111");
+        const node1 = document.getElementById("node1");
+        const node2 = document.getElementById("node2");
+        swapNodes(node1, node2);
+      });
+    </script>
+  </body>
 </html>
