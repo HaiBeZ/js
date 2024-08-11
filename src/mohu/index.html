@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Blur Demo</title>
+  <style>
+    .test{
+      background-color: gray;
+      position: absolute;
+      left: 500px;
+      height: 400px;
+      width: 400px;
+      filter: blur(75px);
+
+    }
+  </style>
+</head>
+  
+<body>
+  <div class="test">
+  
+  </div>
+  <canvas id="myCanvas" width="400" height="400"></canvas>
+
+  <script>
+    // 获取 canvas 元素和上下文
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // 绘制纯色背景
+    ctx.filter='blur(70px)';
+    ctx.fillStyle ='gray';
+    ctx.fillRect(50,50, canvas.width-100, canvas.height-100);
+
+    // 应用模糊
+    // var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    // var data = imageData.data;
+
+    // for (var i = 0; i < data.length; i += 4) {
+    //   var r = data[i];
+    //   var g = data[i + 1];
+    //   var b = data[i + 2];
+    //   var a = data[i + 3];
+
+    //   // 简单的模糊算法，这里只是对颜色值进行了平均处理，实际的模糊效果会更复杂
+    //   data[i] = (r + r + r) / 3;
+    //   data[i + 1] = (g + g + g) / 3;
+    //   data[i + 2] = (b + b + b) / 3;
+    // }
+
+    // ctx.putImageData(imageData, 0, 0);
+  </script>
+</body>
+
+</html>

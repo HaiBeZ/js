@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Square Rotation</title>
+</head>
+
+<body>
+  <canvas id="myCanvas" width="400" height="400"></canvas>
+
+  <script>
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // 正方形的边长
+    var sideLength = 100;
+
+    // 正方形的中心坐标
+    var centerX = canvas.width / 2;
+    var centerY = canvas.height / 2;
+
+    function drawAndRotate() {
+      // 清除画布
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 保存当前的绘图状态
+      ctx.save();
+
+      // 平移到中心
+      ctx.translate(centerX, centerY);
+
+      // 旋转
+      ctx.rotate(Math.PI / 4);
+
+      // 绘制正方形
+      ctx.fillStyle ='red';
+      ctx.fillRect(-sideLength / 2, -sideLength / 2, sideLength, sideLength);
+
+      // 恢复之前保存的绘图状态
+      ctx.restore();
+    }
+
+    setInterval(drawAndRotate, 100);
+  </script>
+</body>
+
+</html>
