@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+		/>
+		<title>three.js css2d - label</title>
+		<link type="text/css" rel="stylesheet" href="main.css" />
+		<style>
+			.label {
+				color: #fff;
+				font-family: sans-serif;
+				padding: 2px;
+				background: rgba(0, 0, 0, 0.6);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>
+			css2d - label
+		</div>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+		<script type="module">
+			import * as THREE from "three";
+			import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+			import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+			import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+			// 高斯模糊
+			import { HorizontalBlurShader } from "three/addons/shaders/HorizontalBlurShader.js";
+			import { VerticalBlurShader } from "three/addons/shaders/VerticalBlurShader.js";
+
+			const vshader = `
+varying vec2 v_uv;
+varying vec3 v_position;
+
+void main() {	
+  v_uv = uv;
+  v_position = position;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+`;
+			const fshader = `
+#define PI 3.141592653589
+
+varying vec2 v_uv;
+varying vec3 v_position;
+
+float isPointInEllipse(vec2 point, vec2 center, float semiMajorAxis, float semiMinorAxis) {
+    vec2 offset = point - center;
+    float xComponent = offset.x * offset.x / (semiMajorAxis * semiMajorAxis);
+    float yComponent = offset.y * offset.y / (semiMinorAxis * semiMinorAxis);
+    return (xComponent + yComponent) <= 1.0 ? 1.0:0.0;
+}
+
+mat2 rotationMatrix(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat2(c, -s, s, c);
+}
+
+float isPointInRotatedEllipse(vec2 point, vec2 center, vec2 radii, float rotationAngle) {
+    vec2 normalizedPoint = point - center;
+    mat2 rotMat = rotationMatrix(rotationAngle);
+    vec2 rotatedPoint = rotMat * normalizedPoint;
+
+    float ratioX = rotatedPoint.x / radii.x;
+    float ratioY = rotatedPoint.y / radii.y;
+    float distanceSquared = ratioX * ratioX + ratioY * ratioY;
+    return distanceSquared <= 1.0 ? 1.0 : 0.0;
+}
+
+
+void main (void)
+{
+  // float in_circle=isPointInEllipse(v_position.xy,vec2(0,0),0.5,0.3);
+  float in_circle=isPointInRotatedEllipse(v_position.xy,vec2(0,0),vec2(0.55,0.3),-0.45);
+  vec3 color = vec3(1.0, 1.0 ,0) * in_circle;
+  gl_FragColor = vec4(color,1.0); 
+}
+`;
+			let camera, scene, renderer, composer;
+			let ratio = window.innerWidth / window.innerHeight;
+			let fullwidth = 1;
+
+			function init() {
+				// 初始化渲染器
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				// renderer.setClearColor(0xbfa3a90);
+				document.body.appendChild(renderer.domElement);
+
+				// 初始化场景
+				scene = new THREE.Scene();
+
+				// 初始化相机
+				camera = new THREE.OrthographicCamera(
+					-ratio * fullwidth,
+					ratio * fullwidth,
+					fullwidth,
+					-fullwidth,
+					0,
+					1000
+				);
+				scene.add(camera);
+
+				// 初始化滤镜
+				composer = new EffectComposer(renderer);
+				const renderPass = new RenderPass(scene, camera);
+				const effectHBlur = new ShaderPass(HorizontalBlurShader);
+				const effectVBlur = new ShaderPass(VerticalBlurShader);
+				effectHBlur.uniforms["h"].value = 2 / 100;
+				effectVBlur.uniforms["v"].value = 2 / 100;
+				composer.addPass(renderPass);
+				// 高斯模糊效果
+				composer.addPass(effectHBlur);
+				composer.addPass(effectVBlur);
+
+				window.addEventListener("resize", onWindowResize);
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				composer.setSize(window.innerWidth, window.innerHeight);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+			}
+
+			// 渲染函数
+			function animate() {
+				requestAnimationFrame(animate);
+				composer.render();
+				// renderer.render(scene, camera);
+			}
+
+			function initStage() {
+				// 圆形
+				// const geometry = new THREE.CircleGeometry(0.5, 32);
+				// const material = new THREE.MeshBasicMaterial({
+				// 	color: 0xff00ff,
+				// 	side: THREE.DoubleSide,
+				// });
+				// const circle = new THREE.Mesh(geometry, material);
+				// scene.add(circle);
+				// console.log("circle", circle);
+
+				// 椭圆
+				const uniforms = {
+					u_time: { value: 0.0 },
+					u_mouse: { value: { x: 0.0, y: 0.0 } },
+					u_resolution: { value: { x: 0, y: 0 } },
+				};
+
+				const geometry = new THREE.PlaneGeometry(2, 2);
+				const material = new THREE.ShaderMaterial({
+					uniforms: uniforms,
+					vertexShader: vshader,
+					fragmentShader: fshader,
+				});
+
+				const plane = new THREE.Mesh(geometry, material);
+				scene.add(plane);
+			}
+
+			function filter() {}
+
+			// 初始化相机
+			init();
+			// 初始化物体
+
+			initStage();
+
+			// 滤镜
+			filter();
+
+			// 动画
+			animate();
+		</script>
+	</body>
+</html>
